@@ -1,0 +1,21 @@
+import heapq
+
+def astar(cap, start, goal):
+    h = lambda s: abs(s[0]-goal[0]) + abs(s[1]-goal[1])
+    pq, seen = [(h(start), 0, start, [])], set()
+
+    while pq:
+        _, g, (a,b), path = heapq.heappop(pq)
+        if (a,b) in seen: continue
+        seen.add((a,b))
+        path = path + [(a,b)]
+        if (a,b) == goal: return path
+
+        for x,y in [
+            (cap[0],b),(a,cap[1]),(0,b),(a,0),
+            (a-min(a,cap[1]-b), b+min(a,cap[1]-b)),
+            (a+min(b,cap[0]-a), b-min(b,cap[0]-a))
+        ]:
+            heapq.heappush(pq,(g+1+h((x,y)),g+1,(x,y),path))
+
+print(astar((4,3),(0,0),(2,0)))
