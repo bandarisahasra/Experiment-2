@@ -1,0 +1,38 @@
+import heapq
+
+def astar(x_cap, y_cap, goal):
+    print("Container X capacity:", x_cap)
+    print("Container Y capacity:", y_cap)
+    print("Goal: exactly", goal, "litres in container X\n")
+
+    h = lambda s: abs(s[0] - goal)
+    pq = [(h((0,0)), 0, (0,0))]
+    visited = set()
+
+    while pq:
+        _, cost, (x, y) = heapq.heappop(pq)
+
+        if (x, y) in visited:
+            continue
+        visited.add((x, y))
+
+        print("State -> X:", x, "Y:", y)
+
+        if x == goal:
+            print("\nGoal achieved!")
+            return cost
+
+        next_states = {
+            (x_cap, y),              
+            (x, y_cap),              
+            (0, y),                  
+            (x, 0),             
+            (x - min(x, y_cap - y), y + min(x, y_cap - y)),  
+            (x + min(y, x_cap - x), y - min(y, x_cap - x))   
+        }
+
+        for state in next_states:
+            heapq.heappush(pq, (cost + 1 + h(state), cost + 1, state))
+
+steps = astar(7, 4, 6)
+print("\nMinimum steps required:", steps)
