@@ -1,0 +1,26 @@
+import heapq
+
+grades = [(87,1000),(90,800),(93,500)]
+target_vol, target_oct = 1000, 89.5
+
+def h(state):
+    total = sum(state)
+    return abs(target_oct - sum(state[i]*grades[i][0] for i in range(3))/total) if total>0 else target_oct
+
+pq = [(h([0,0,0]),0,[0,0,0])]
+visited = set()
+
+while pq:
+    _,_,s = heapq.heappop(pq)
+    t = tuple(s)
+    if t in visited: continue
+    visited.add(t)
+    if sum(s)==target_vol and abs(sum(s[i]*grades[i][0] for i in range(3))/target_vol - target_oct)<1e-2:
+        for i,v in enumerate(s): print(f"Grade {chr(65+i)}: {v}L")
+        print(f"Blended octane: {sum(s[i]*grades[i][0] for i in range(3))/target_vol:.2f}")
+        break
+    for i in range(3):
+        for add in [1,10,50,100]:
+            if s[i]+add<=grades[i][1] and sum(s)+add<=target_vol:
+                ns = s[:]; ns[i]+=add
+                heapq.heappush(pq,(h(ns),0,ns))
